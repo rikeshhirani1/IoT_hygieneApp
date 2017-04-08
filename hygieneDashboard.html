@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>IoT Dashboard</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+              <script src="https://use.fontawesome.com/ab76c11397.js"></script>
+        <link href="https://afeld.github.io/emoji-css/emoji.css" rel="stylesheet">
+
+
+        <style>
+            body{
+                background-color: #42f495;
+            }
+            #tile1, #tile2, #tile3, #tile4{
+                height: 250px;
+                
+                border-left: 2px solid white;
+                border-bottom: 2px solid white;
+                border-top: 2px solid white;
+                display: table;
+            }
+            #tile1{
+                background-color: #0099ff;    
+                color:white;       
+            }
+            
+            #tile2{
+                background-color: #990000;     
+                color:black;
+            }
+            
+            #tile3{
+                background-color: #009933;   
+                color: black; 
+            }
+            
+            #tile4{
+                background-color: #0099ff;    
+                color:white;         
+            }
+            
+            #tile5{
+                border-top: 2px solid white;
+                background-color: #e51041;    
+                color:white;  
+                height: 100px;
+                display: table;
+            }
+            
+            #tile6{
+                border-bottom: 2px solid white;
+                background-color: #e51041;    
+                color:white;  
+                height: 100px;
+                display: table;
+            }
+            
+            #tile7{
+                border-bottom: 2px solid white;
+                border-left: 2px solid white;
+                background-color: #42f49e;    
+                color:black;  
+                height: 100px;
+                display: table;
+            }
+            
+            #tileText5{
+                display: table-cell;   
+                vertical-align: middle; 
+                text-align: center;
+                height: 100px;
+                width: 100%;
+                
+                font-weight: bold;
+                margin-left: auto;
+                margin-right: auto;
+                font-size: 18px;
+            }
+            #tileText{                
+                display: table-cell;   
+                vertical-align: middle; 
+                text-align: center;
+                height: 250px;
+                width: 100%;
+                
+                font-weight: bold;
+                margin-left: auto;
+                margin-right: auto;
+                font-size: 18px;
+            }
+            
+            #emoji{
+                font-size: 50px;
+            }
+            
+            #data{
+                font-size: 28px;
+            }
+            
+            #timeDateInput{
+                padding-left: 25px;
+                padding-right: 25px; 
+                padding-top: 15px;
+            }
+            
+            #hourFrom, #dateMoveInputFrom, #minutes, #dateMoveInputTo, #hourTo, #minutesTo{
+                border-radius: 0;
+                border: 2px solid black;
+                background-color: transparent;
+                font-weight: bold;
+                color: black;
+            }
+            
+            #addOn{
+                border-top: 2px solid black;
+                border-bottom: 2px solid black;
+                color: black;
+                background-color: transparent;
+                
+            }
+        </style>
+  </head>
+    <body>
+        <div class="row" id="timeDateInput" style="display:none;">
+            <div class="col-xs-6">
+                <input type='date' class='form-control'  id='dateMoveInputFrom' name='dateInputFrom' onchange="getDbData()"/>
+            </div>
+            <div class="col-xs-6">
+                <div class='input-group form-inline' >
+                    <select class="form-control" id="hourFrom" name="hoursFrom" onchange="getDbData()">
+                        <option value="00" selected>00</option>
+                        <option value="01">01</option>
+                        <option value="02">02</option>
+                        <option value="03">03</option>
+                        <option value="04">04</option>
+                        <option value="05">05</option>
+                        <option value="06">06</option>
+                        <option value="07">07</option>
+                        <option value="08">08</option>
+                        <option value="09">09</option>
+                        <option value="10">10</option>
+                        <option value="11">11</option>
+                        <option value="12" selected>12</option>
+                        <option value="13">13</option>
+                        <option value="14">14</option>
+                        <option value="15">15</option>
+                        <option value="16">16</option>
+                        <option value="17">17</option>
+                        <option value="18">18</option>
+                        <option value="19">19</option>
+                        <option value="20">20</option>
+                        <option value="21">21</option>
+                        <option value="22">22</option>
+                        <option value="23">23</option>
+                    </select>
+                    <span class="input-group-addon" id="addOn"><b>:</b></span>
+                    <select class="form-control" id="minutes" name="minsFrom" onchange="getDbData()">
+                        <option value="00">00</option>
+                        <option value="15">15</option>
+                        <option value="30">30</option>
+                        <option value="45">45</option>
+                    </select>
+                </div>
+                
+            </div>
+        </div>
+        <div class="row" id="timeDateInput"  style="display:none;">
+            <div class="col-xs-6">
+                <input type='date' class='form-control'  id='dateMoveInputTo' name='dateInputTo'  onchange="getDbData()"/>          
+            </div>
+            <div class="col-xs-6">
+                <div class='input-group form-inline'>
+                    <select class="form-control" id="hourTo" name="hoursTo" onchange="getDbData()">
+                        <option value="00">00</option>
+                        <option value="01">01</option>
+                        <option value="02">02</option>
+                        <option value="03">03</option>
+                        <option value="04">04</option>
+                        <option value="05">05</option>
+                        <option value="06">06</option>
+                        <option value="07">07</option>
+                        <option value="08">08</option>
+                        <option value="09">09</option>
+                        <option value="10">10</option>
+                        <option value="11">11</option>
+                        <option value="12" selected>12</option>
+                        <option value="13">13</option>
+                        <option value="14">14</option>
+                        <option value="15">15</option>
+                        <option value="16">16</option>
+                        <option value="17">17</option>
+                        <option value="18">18</option>
+                        <option value="19">19</option>
+                        <option value="20">20</option>
+                        <option value="21">21</option>
+                        <option value="22">22</option>
+                        <option value="23">23</option>
+                    </select> 
+                    <span class="input-group-addon" id="addOn"><b>:</b></span>
+                    <select class="form-control" id="minutesTo" name="minsTo" onchange="getDbData()">
+                        <option value="00">00</option>
+                        <option value="15">15</option>
+                        <option value="30">30</option>
+                        <option value="45">45</option>
+                    </select>
+                </div>
+                
+            </div>
+
+        </div>
+        <!--
+        <div>
+            <div>Total Toilet Users: <b id="toiletsUsed1"></b></div><br>
+            <div>Percentage Washed Hands: <b id="percentWashed"></b></div><br>
+            <div><b id="handWashed"></b> out of <b id="toiletsUsed2"></b> users washed their hands</div><br>
+            <div>Average hand washing time: <b id="avgWashTime"></b></div>
+        </div>-->
+        <br>
+        <div class="row">   
+            <div class="col-xs-12 col-sm-12 col-md-12" id="tile5">
+                <div id="tileText5">
+                    <i id="iconExclamation" class="fa fa-3x fa-exclamation-triangle" aria-hidden="true" style="vertical-align:middle"></i>
+                    &nbsp;&nbsp; Today
+                    <i id="data"><b id="notWashed" style="vertical-align:middle">100</b></i>
+                    &nbsp;User(s) failed to Wash their Hands
+                </div>                           
+            </div>
+    
+        </div>
+       
+          <div class="row">   
+            <div class="col-xs-12 col-sm-6 col-md-3" id="tile1">
+                <div id="tileText">
+                    <i class="fa fa-4x fa-users" aria-hidden="true"></i><br><br>
+                    Total Toilet Users: <i id="data"><b id="toiletsUsed1" style="vertical-align:middle"></b></i>
+                </div>                           
+            </div>
+     
+            <div class="col-xs-12 col-sm-6 col-md-3" id="tile2">
+                <div id="tileText">
+                    <!--<i class="fa fa-5x fa-smile-o" aria-hidden="true"></i><br><br>-->
+                    <div id="emojiSection"><i class="em em-poop" id="emoji"></i></div><br>
+                    <i id="data"><b id="percentWashed" style="vertical-align:middle"></b></i> Washed their Hands
+                </div>
+            </div>
+      
+            <div class="col-xs-12 col-sm-6 col-md-3" id="tile3">
+                <div id="tileText">
+                    <i class="fa fa-4x fa-sign-language" aria-hidden="true"></i><br><br>
+                        <i id="data"><b id="handWashed" style="vertical-align:middle"></b></i> out of <i id="data"><b id="toiletsUsed2" style="vertical-align:middle"></b></i> users Washed their Hands
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-sm-6 col-md-3" id="tile4">
+                <div id="tileText">
+                    <i class="fa fa-4x fa-clock-o" aria-hidden="true"></i><br><br>
+                        Average Hand Washing Time: <i id="data"><b id="avgWashTime" style="vertical-align:middle"></b></i> seconds
+                </div>  
+            </div>
+        </div>
+        <div class="row">   
+            <div class="col-xs-12 col-sm-6 col-md-6" id="tile7">
+                <div id="tileText5">
+                    Yesterday
+                    <i id="data"><b id="yesterdayToiletUsers" style="vertical-align:middle"></b></i> Washed their Hands
+                </div>                           
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-6" id="tile7">
+                <div id="tileText5">
+                    Yesterday
+                    <i id="data"><b id="yesterdayNotWashed" style="vertical-align:middle"></b></i> User(s) failed to Wash their Hands
+                </div>                           
+            </div>
+        </div>
+        <div class="row">   
+            <div class="col-xs-12 col-sm-12 col-md-12" id="tile6">
+                <div id="tileText5">
+                    Did you know?<br>
+                    &nbsp;&nbsp;
+                    <b><i id="facts"></i></b>
+                </div>                           
+            </div>
+    
+        </div>
+        <!--
+        <i class="em em-mask" id="emoji"></i>
+        <i class="em em-smiley" id="emoji"></i>
+        <i class="em em-worried" id="emoji"></i>
+        <i class="em em-open_mouth" id="emoji"></i>
+        <i class="em em-cold_sweat" id="emoji"></i>
+        <i class="em em-grin" id="emoji"></i>
+        <i class="em em---1" id="emoji"></i>
+        <i class="em em--1" id="emoji"></i>
+        <i class="em em-cry" id="emoji"></i>
+        -->
+        <script>
+            /*setInterval(function () {
+            var icon = $("#iconExclamation");
+
+            if (icon.css("color") == 'rgb(255, 255, 255)') {
+            icon.css("color", "#ffbb33");
+
+            }
+            else {
+            icon.css("color", "white");
+            }
+
+            }, 1500);
+            */
+
+            var indexPosition = 0;
+            setInterval(function () {
+                var maxIndex = 8;
+
+                displayFacts(indexPosition);
+                indexPosition++;
+                if (indexPosition >= 8) {
+                    indexPosition = 0;
+                }
+
+            }, 7500);
+            $(document).ready(function () {
+                displayFacts(0);
+                setDefaultDate();
+                yesterdayData();
+                setInterval(function () {
+                    setDefaultDate();
+                }, 2000);
+            });
+            function displayFacts(index) {
+                var facts = ["Touching the face with contaminated hands spreads illnesses like pneumonia, the cold, and the flu. Proper handwashing can reduce respiratory infections by close to 20%.",
+                "Less than 75% of women and less than 50% of men wash their hands after going to the bathroom",
+                "Every time a toilet is flushed with the lid up, a fine mist containing bacteria such as E. Coli and Staph is spread over an area of 6 square meters. The area around sinks in public bathrooms is 90% covered in such bacteria.",
+                "For every 15 seconds spent washing hands, 10 times more bacteria is removed.",
+                "30 seconds of using hand sanitizer kills as much bacteria as 2 full minutes of handwashing",
+                "Damp hands are 1,000x more likely to spread bacteria than dry hands. ",
+                "Only 20% of people dry their hands after washing",
+                "A study of Detroit school children showed that those who washed their hands had 24% fewer sick days due to respiratory illness and 51% fewer sick days due to upset stomach"];
+
+                document.getElementById('facts').innerHTML = facts[index];
+            }
+
+            function setDefaultDate() {
+                var currentDate = new Date();
+                var tommorowsDate = currentDate.getDate() + 1;
+                currentDate.setDate(tommorowsDate);
+                var newFormatDate = formatDate(currentDate);
+                console.log(currentDate + " Tommorows Date: " + tommorowsDate);
+                document.getElementsByName("dateInputTo")[0].value = newFormatDate;
+                $.get("https://ucl-iot-project.eu-gb.mybluemix.net/getLowestStoredDate", function (result) {
+                    console.log(result);
+                    if (result.length != 0) {
+                        console.log(result.DATETIME);
+                        var lowestStoredDate = parseInt(result.DATETIME);
+                        newFormatDate = formatDate(lowestStoredDate);
+                        document.getElementsByName("dateInputFrom")[0].value = newFormatDate;
+                        getDbData();
+                    }
+                    else {
+                        var calcWashHandsData = calculateWashedHands(result);
+                        outputDataToPage(calcWashHandsData);
+                    }
+                });
+            }
+            function getDbData() {
+                var fromToDatesInput = getDate();
+                console.log(fromToDatesInput);
+                if (fromToDatesInput != 0) {
+                    getLowestSensorActiveDates(fromToDatesInput[0], fromToDatesInput[1]);
+                    //console.log(firstLastActiveDates);
+
+                }
+            }
+            function getLowestSensorActiveDates(dateFrom, dateTo) {
+                var firstActiveToilet, lastActiveWashBasin;
+                var ajaxParams = "&dateFrom=" + dateFrom + "&dateTo=" + dateTo;
+                $.get("https://ucl-iot-project.eu-gb.mybluemix.net/sensorActiveDate?dateType=firstActivated" + ajaxParams, function (result) {
+                    console.log(result);
+                    if (result.length != 0) {
+                        firstActiveToilet = parseInt(result.DATETIME);
+                        console.log(result.DATETIME);
+                        $.get("https://ucl-iot-project.eu-gb.mybluemix.net/sensorActiveDate?dateType=lastActivated" + ajaxParams, function (result) {
+                            console.log(result);
+                            if (result.length != 0) {
+                                lastActiveWashBasin = parseInt(result.DATETIME);
+                                console.log(result.DATETIME);
+                                $.get("https://ucl-iot-project.eu-gb.mybluemix.net/getDateSearch?dateFrom=" + firstActiveToilet + "&dateTo=" + lastActiveWashBasin, function (result) {
+                                    console.log(result);
+                                    //console.log(result[0].DEVICETYPE);
+                                    //console.log(result[0].TOTAL);
+                                    var calcWashHandsData = calculateWashedHands(result);
+                                    console.log(calcWashHandsData);
+                                    outputDataToPage(calcWashHandsData);
+                                });
+                            }
+                            else {
+                                var calcWashHandsData = calculateWashedHands(result);
+                                outputDataToPage(calcWashHandsData);
+                            }
+                        });
+                    }
+                    else {
+                        var calcWashHandsData = calculateWashedHands(result);
+                        outputDataToPage(calcWashHandsData);
+                    }
+                });
+                //return [firstActiveToilet, lastActiveWashBasin];
+            }
+            function outputDataToPage(washedHandsData) {
+                document.getElementById('toiletsUsed1').innerHTML = washedHandsData[0];
+                document.getElementById('toiletsUsed2').innerHTML = washedHandsData[0];
+                var percentage = Math.round((washedHandsData[2] / washedHandsData[0]) * 100);
+                if (washedHandsData[0] == 0 || washedHandsData[2] == 0) {
+                    percentage = 0;
+                }
+                document.getElementById('percentWashed').innerHTML = percentage + "%";
+                document.getElementById('handWashed').innerHTML = washedHandsData[2];
+                document.getElementById('avgWashTime').innerHTML = Math.round(washedHandsData[3]);
+                document.getElementById('notWashed').innerHTML = washedHandsData[0] - washedHandsData[2];
+                document.getElementById('tile2').style.backgroundColor = numberToColorHsl(percentage);
+                document.getElementById('tile3').style.backgroundColor = numberToColorHsl(percentage);
+                outputEmoji(percentage);
+            }
+            function calculateWashedHands(dbData) {
+                var length = dbData.length;
+                console.log("Length: " + length);
+                var toiletsUsed = 0;
+                var washBasinUsed = 0;
+                var washedHands = 0;
+                var avgHandsWashedTime = "N/A";
+                if (length == 2) {
+                    if (dbData[0].DEVICETYPE == "washBasin") {
+                        washBasinUsed = dbData[0].TOTAL;
+                        toiletsUsed = dbData[1].TOTAL;
+                        avgHandsWashedTime = dbData[0].AVERAGE;
+                    }
+                    else {
+                        toiletsUsed = dbData[0].TOTAL;
+                        washBasinUsed = dbData[1].TOTAL;
+                        avgHandsWashedTime = dbData[1].AVERAGE;
+                    }
+                }
+                else if (length == 1) {
+                    if (dbData[0].DEVICETYPE == "washBasin") {
+                        washBasinUsed = dbData[0].TOTAL;
+                        avgHandsWashedTime = dbData[0].AVERAGE;
+                    }
+                    else {
+                        toiletsUsed = dbData[0].TOTAL;
+                    }
+                }
+                washBasinUsed = parseInt(washBasinUsed);
+                toiletsUsed = parseInt(toiletsUsed);
+                console.log("WashBasinUsed: " + washBasinUsed + " toiletUsed: " + toiletsUsed);
+                if (toiletsUsed >= washBasinUsed) {
+                    washedHands = washBasinUsed;
+                    console.log("1: Washed: " + washedHands);
+                }
+                else if (toiletsUsed < washBasinUsed) {
+                    washedHands = toiletsUsed;
+                    console.log("2: Washed: " + washedHands);
+                }
+                return [toiletsUsed, washBasinUsed, washedHands, avgHandsWashedTime];
+            }
+            function getDate() {
+                var dateFrom = document.getElementsByName("dateInputFrom")[0].value;
+                var dateTo = document.getElementsByName("dateInputTo")[0].value;
+                var hoursFrom = document.getElementsByName("hoursFrom")[0].value;
+                var hoursTo = document.getElementsByName("hoursTo")[0].value;
+                var minsFrom = document.getElementsByName("minsFrom")[0].value;
+                var minsTo = document.getElementsByName("minsTo")[0].value;
+
+                if (dateFrom != "" && dateTo != "" && dateFrom != null && dateTo != null) {
+                    var dateFromTime = hoursFrom + ":" + minsFrom + ":00Z";
+                    var dateToTime = hoursTo + ":" + minsTo + ":00Z";
+
+                    var dateFromFormatted = formatDate(dateFrom);
+                    var dateToFormatted = formatDate(dateTo);
+                    var newDateFrom = new Date(dateFromFormatted + "T" + dateFromTime);
+                    var newDateTo = new Date(dateToFormatted + "T" + dateToTime);
+                    console.log("DateFrom: " + newDateFrom + " DateTo: " + newDateTo);
+                    var dateFromMilli = newDateFrom.valueOf();
+                    var dateToMilli = newDateTo.valueOf();
+                    console.log("DateFrom: " + dateFromMilli + " DateTo: " + dateToMilli);
+                    return [dateFromMilli, dateToMilli];
+                }
+                else {
+                    return 0;
+                }
+            }
+            
+                        function yesterdayData() {
+                var yesterdayDate = new Date();
+                yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+
+                var currentDate = new Date();
+
+                var dd = currentDate.getDate();
+                var mm = currentDate.getMonth() + 1; //January is 0!
+                var yyyy = currentDate.getFullYear();
+
+                if (dd < 10) {
+                    dd = '0' + dd
+                }
+
+                if (mm < 10) {
+                    mm = '0' + mm
+                }
+
+                currentDate = yyyy + '/' + mm + '/' + dd;
+                currentDate = new Date(currentDate);
+
+                getLowestSensorActiveDatesYesterday(yesterdayDate.valueOf(), currentDate.valueOf());
+            }
+
+            function getLowestSensorActiveDatesYesterday(dateFrom, dateTo) {
+                var firstActiveToilet, lastActiveWashBasin;
+                var ajaxParams = "&dateFrom=" + dateFrom + "&dateTo=" + dateTo;
+                $.get("https://ucl-iot-project.eu-gb.mybluemix.net/sensorActiveDate?dateType=firstActivated" + ajaxParams, function (result) {
+                    console.log(result);
+                    if (result.length != 0) {
+                        firstActiveToilet = parseInt(result.DATETIME);
+                        console.log(result.DATETIME);
+                        $.get("https://ucl-iot-project.eu-gb.mybluemix.net/sensorActiveDate?dateType=lastActivated" + ajaxParams, function (result) {
+                            console.log(result);
+                            if (result.length != 0) {
+                                lastActiveWashBasin = parseInt(result.DATETIME);
+                                console.log(result.DATETIME);
+                                $.get("https://ucl-iot-project.eu-gb.mybluemix.net/getDateSearch?dateFrom=" + firstActiveToilet + "&dateTo=" + lastActiveWashBasin, function (result) {
+                                    console.log(result);
+                                    //console.log(result[0].DEVICETYPE);
+                                    //console.log(result[0].TOTAL);
+                                    var calcWashHandsData = calculateWashedHands(result);
+                                    console.log(calcWashHandsData);
+                                    outputYesterdayDataToPage(calcWashHandsData);
+                                });
+                            }
+                            else {
+                                var calcWashHandsData = calculateWashedHands(result);
+                                outputYesterdayDataToPage(calcWashHandsData);
+                            }
+                        });
+                    }
+                    else {
+                        var calcWashHandsData = calculateWashedHands(result);
+                        outputYesterdayDataToPage(calcWashHandsData);
+                    }
+                });
+            }
+            function outputYesterdayDataToPage(washedHandsData) {
+
+                var percentage = Math.round((washedHandsData[2] / washedHandsData[0]) * 100);
+                if (washedHandsData[0] == 0 || washedHandsData[2] == 0) {
+                    percentage = 0;
+                }
+                document.getElementById('yesterdayToiletUsers').innerHTML = percentage + "%";
+                //document.getElementById('tile7').style.backgroundColor = numberToColorHsl(percentage);
+                document.getElementById('yesterdayNotWashed').innerHTML = washedHandsData[0] - washedHandsData[2];
+
+            }
+            function formatDate(date) {
+                date = new Date(date);
+                var day = date.getDate();
+                var month = date.getMonth() + 1; //January is 0!
+                var year = date.getFullYear();
+                if (day < 10) {
+                    day = '0' + day
+                }
+                if (month < 10) {
+                    month = '0' + month
+                }
+                var dateFormatted = year + '-' + month + '-' + day;
+                console.log("FormattedDate() : " + dateFormatted);
+                return dateFormatted;
+            }
+            //http://jsfiddle.net/rE6Rk/1/
+            //http://stackoverflow.com/questions/17525215/calculate-color-values-from-green-to-red   
+            function hslToRgb(h, s, l) {
+                var r, g, b;
+                if (s == 0) {
+                    r = g = b = l; // achromatic
+                } else {
+                    function hue2rgb(p, q, t) {
+                        if (t < 0) t += 1;
+                        if (t > 1) t -= 1;
+                        if (t < 1 / 6) return p + (q - p) * 6 * t;
+                        if (t < 1 / 2) return q;
+                        if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+                        return p;
+                    }
+                    var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+                    var p = 2 * l - q;
+                    r = hue2rgb(p, q, h + 1 / 3);
+                    g = hue2rgb(p, q, h);
+                    b = hue2rgb(p, q, h - 1 / 3);
+                }
+                return [Math.floor(r * 255), Math.floor(g * 255), Math.floor(b * 255)];
+            }
+            function numberToColorHsl(i) {
+                // as the function expects a value between 0 and 1, and red = 0° and green = 120°
+                // we convert the input to the appropriate hue value
+                var hue = i * 1.2 / 360;
+                // we convert hsl to rgb (saturation 100%, lightness 50%)
+                var rgb = hslToRgb(hue, 1, .5);
+                // we format to css value and return
+                return 'rgb(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ')';
+            }
+            function outputEmoji(percentage) {
+                var emoji = "";
+                if (percentage == 100) {
+                    emoji = '<i class="em em---1" id="emoji"></i>';
+                }
+                else if (percentage >= 90 && percentage < 100) {
+                    emoji = '<i class="em em-blush"></i>';
+                }
+                else if (percentage >= 80 && percentage < 90) {
+                    emoji = '<i class="em em-open_mouth" id="emoji"></i>';
+                }
+                else if (percentage >= 70 && percentage < 80) {
+                    emoji = '<i class="em em-worried" id="emoji">';
+                }
+                else if (percentage >= 60 && percentage < 70) {
+                    emoji = '<i class="em em-grin" id="emoji"></i>';
+                }
+                else if (percentage >= 50 && percentage < 60) {
+                    emoji = '<i class="em em--1" id="emoji"></i>';
+                }
+                else if (percentage >= 40 && percentage < 50) {
+                    emoji = '<i class="em em-astonished"></i>';
+                }
+                else if (percentage >= 30 && percentage < 40) {
+                    emoji = '<i class="em em-cry" id="emoji"></i>';
+                }
+                else if (percentage >= 20 && percentage < 30) {
+                    emoji = '<i class="em em-cold_sweat" id="emoji"></i>';
+                }
+                else if (percentage >= 10 && percentage < 20) {
+                    emoji = '<i class="em em-mask" id="emoji"></i>';
+                }
+                else if (percentage >= 0 && percentage < 10) {
+                    emoji = '<i class="em em-poop" id="emoji"></i>';
+                }
+
+                document.getElementById('emojiSection').innerHTML = emoji;
+            }
+
+
+        </script>
+    </body>
+</html>
