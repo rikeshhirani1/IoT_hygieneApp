@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>IoT DB - Data</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://use.fontawesome.com/ab76c11397.js"></script>
+    <link href="https://afeld.github.io/emoji-css/emoji.css" rel="stylesheet">
+
+
+    <style>
+    </style>
+  </head>
+    <body>
+        <div class="container">         
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>DeviceID</th>
+                <th>DeviceType</th>
+                <th>DateTime</th>
+                <th>ActiveState</th>
+              </tr>
+            </thead>
+            <tbody id="dataRows">
+
+            </tbody>
+          </table>
+        </div>
+        <script>
+            var dateTimeID = '0000000000000';
+            var dataLengthID = 0;
+
+            $(document).ready(function () {
+                displayAllData();
+
+
+                setInterval(function () {
+                    if (dataLengthID != 0) {
+                        //displayNewData();
+                        displayAllData();
+                    }
+                }, 4000);
+
+            });
+
+
+            function displayAllData() {
+                $.get("https://ucl-iot-project.eu-gb.mybluemix.net/outputAllData", function (result) {
+                    console.log(result);
+                    outputDataToPage(result);
+                });
+            }
+
+            function outputDataToPage(data) {
+                var dataSize = data.length;
+                dataLengthID = dataSize;
+                var tableRowHTML = "";
+
+                for (var i = 0; i < dataSize; i++) {
+                    if (i == 0) {
+                        dateTimeID = data[0].DATETIME;
+                    }
+                    var activeState = data[i].ACTIVESTATE;
+                    if (data[i].DEVICETYPE == "toilet") {
+                        activeState = "N/A";
+                    }
+                    tableRowHTML = tableRowHTML + "<tr><td>" + (dataSize - (i)) + "</td><td>" + data[i].DEVICENAME + "</td><td>" + data[i].DEVICETYPE + "</td><td>" + data[i].DATETIME + "</td><td>" + activeState + "</td></tr>";
+                }
+
+                document.getElementById('dataRows').innerHTML = tableRowHTML;
+            }
+
+            function displayNewData() {
+                console.log("dateTimeID() : " + dateTimeID);
+                //var searchString = $("#searchProfileBlogs").val();
+                var dataTime = 'dateFrom=' + dateTimeID.toString();
+
+                // ajax call
+                $.ajax({
+                    type: "GET",
+                    url: "https://ucl-iot-project.eu-gb.mybluemix.net/newData?" + dataTime,
+                    beforeSend: function (html) { // this happens before actual call
+                        var currentDateTime = new Date();
+                        var newDataTimeID = currentDateTime.valueOf();
+
+                        if (dateTimeID < newDataTimeID) {
+                            //dateTimeID = currentDateTime.valueOf();
+                        }
+
+                    },
+                    success: function (data) {
+                        console.log(data);
+                        var dataSize = data.length;
+                        console.log("Size: " + dataSize);
+                        if (dataSize != 0) {
+                            if (dataSize != undefined) {
+                                dateTimeID = data[0].DATETIME;
+                            }
+                        }
+
+                        var tableRowHTML = "";
+                        var allDataSize = dataSize + dataLengthID; //Old and New Data Length
+                        var tableFormed = false;
+                        for (var i = 0; i < dataSize; i++) {
+                            console.log("For Loop()");
+                            dataLengthID++;
+                            tableFormed = true;
+                            var activeState = data[i].ACTIVESTATE;
+                            if (data[i].DEVICETYPE == "toilet") {
+                                activeState = "N/A";
+                            }
+                            tableRowHTML = tableRowHTML + "<tr><td>" + (allDataSize - i) + "</td><td>" + data[i].DEVICENAME + "</td><td>" + data[i].DEVICETYPE + "</td><td>" + data[i].DATETIME + "</td><td>" + activeState + "</td></tr>";
+                        }
+
+                        if ((data.DEVICETYPE == "toilet" || data.DEVICETYPE == "washBasin") && tableFormed == false && dataSize == undefined) {
+                            allDataSize = dataLengthID++;
+                            dateTimeID = data.DATETIME;
+                            var activeState = data.ACTIVESTATE;
+                            if (data.DEVICETYPE == "toilet") {
+                                activeState = "N/A";
+                            }
+                            tableRowHTML = tableRowHTML + "<tr><td>" + (allDataSize + 1) + "</td><td>" + data.DEVICENAME + "</td><td>" + data.DEVICETYPE + "</td><td>" + data.DATETIME + "</td><td>" + activeState + "</td></tr>";
+
+                        }
+                        $("#dataRows").prepend(tableRowHTML);
+                    }
+                });
+            }
+
+        </script>
+    </body>
+</html>
